@@ -85,16 +85,20 @@ int main() {
 
     picoemp_init();
 
-    //Test LED
+    // Test all LED functionality
     // All ON for 1s and then all OFF
-    gpio_put(PIN_LED_HV, true);
-    gpio_put(PIN_LED_STATUS, true);
-    gpio_put(PIN_LED_CHARGE_ON, true);
-    sleep_ms(1000);
-    gpio_put(PIN_LED_HV, false);
-    gpio_put(PIN_LED_STATUS, false);
-    gpio_put(PIN_LED_CHARGE_ON, false);
-    
+    for(int i=0; i<10; i++)
+    {
+        gpio_put(PIN_LED_HV, true);
+        gpio_put(PIN_LED_STATUS, true);
+        gpio_put(PIN_LED_CHARGE_ON, true);
+        sleep_ms(50);
+        gpio_put(PIN_LED_HV, false);
+        gpio_put(PIN_LED_STATUS, false);
+        gpio_put(PIN_LED_CHARGE_ON, false);
+        sleep_ms(50);
+    }
+
     // Init for reset pin (move somewhere else)
     gpio_init(1);
     gpio_set_dir(1, GPIO_OUT);

@@ -159,8 +159,8 @@ bool handle_command(char *command) {
     }
     if(strcmp(command, "fa") == 0 || strcmp(command, "fast_trigger_configure") == 0) {
         char **unused;
-        printf(" configure in cycles\n");
-        printf("  1 cycle = 8ns\n");
+        printf(" Configure in cycles\n");
+        printf("  1 cycle = 8ns (At 125MHz Clock)\n");
         printf("  1us = 125 cycles\n");
         printf("  1ms = 125000 cycles\n");
         printf("  max = MAX_UINT32 = 4294967295 cycles = 34359ms\n");
@@ -289,23 +289,32 @@ void serial_console() {
     while(1) {
         read_line();
         printf("\n");
-        if(!handle_command(serial_buffer)) {
-            printf("PicoEMP Commands:\n");
+        if(!handle_command(serial_buffer)) 
+        {
+            printf("PicoEMP Commands:\n\n");
+
+            printf(" _____ _____ _____    _____       _                               _    _____             _         \n");
+            printf("|   __|     |   __|  |  |  |___ _| |___ ___ ___ ___ ___ _ _ ___ _| |  |  |  |___ ___ ___|_|___ ___ \n");
+            printf("|  |  | | | |  |  |  |  |  |   | . | -_|  _| . |  _| . | | |   | . |  |  |  | -_|  _|_ -| | . |   |\n");
+            printf("|_____|_|_|_|_____|  |_____|_|_|___|___|_| |_  |_| |___|___|_|_|___|   \\___/|___|_| |___|_|___|_|_|\n");
+            printf("                                           |___|                                                   \n");
+            printf("\n");
+
             printf("- <empty to repeat last command>\n");
             printf("- [h]elp\n");
-            printf("- [a]rm\n");
-            printf("- [d]isarm\n");
-            printf("- [p]ulse\n");
-            printf("- [en]able_timeout\n");
-            printf("- [di]sable_timeout\n");
-            printf("- [f]ast_trigger\n");
+            printf("- [a]rm                     (Enable HV)\n");
+            printf("- [d]isarm                  (Remove HV)\n");
+            printf("- [p]ulse                   (Manual one shot)\n");
+            printf("- [en]able_timeout          (Enable HV Timout)\n");
+            printf("- [di]sable_timeout         (Disable HV Timout)\n");
+            printf("- [f]ast_trigger            (Start pin trigger detection)\n");
             printf("- [fa]st_trigger_configure: delay_cycles=%d, time_cycles=%d\n", pulse_delay_cycles, pulse_time_cycles);
             printf("- [in]ternal_hvp\n");
             printf("- [ex]ternal_hvp\n");
             printf("- [c]onfigure: pulse_time=%d, pulse_power=%f\n", pulse_time, pulse_power.f);
-            printf("- [t]oggle_gp1\n");
-            printf("- [s]tatus\n");
-            printf("- [r]eset\n");
+            printf("- [t]oggle_gp1              (Manual reset target board)\n");
+            printf("- [s]tatus                  (Read PicoEmp status)\n");
+            printf("- [r]eset                   (Reset board)\n");
         }
         printf("\n");
         
