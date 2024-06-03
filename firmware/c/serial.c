@@ -10,6 +10,7 @@
 
 static char serial_buffer[256];
 static char last_command[256];
+static uint32_t verbose;
 
 #define PULSE_DELAY_CYCLES_DEFAULT 0
 #define PULSE_TIME_CYCLES_DEFAULT 625 // 5us in 8ns cycles
@@ -51,26 +52,56 @@ void print_status(uint32_t status) {
     bool charged = (status >> 1) & 1;
     bool timeout_active = (status >> 2) & 1;
     bool hvp_mode = (status >> 3) & 1;
-    printf("Status:\n");
-    if(armed) {
-        printf("- Armed\n");
-    } else {
-        printf("- Disarmed\n");
+
+    if (!verbose)
+    {
+        printf("Status:\n");
+
+        if(armed) {
+            printf("- Armed\n");
+        } else {
+            printf("- Disarmed\n");
+        }
+        if(charged) {
+            printf("- Charged\n");
+        } else {
+            printf("- Not charged\n");
+        }
+        if(timeout_active) {
+            printf("- Timeout active\n");
+        } else {
+            printf("- Timeout disabled\n");
+        }
+        if(hvp_mode) {
+            printf("- HVP internal\n");
+        } else {
+            printf("- HVP external\n");
+        }
     }
-    if(charged) {
-        printf("- Charged\n");
-    } else {
-        printf("- Not charged\n");
-    }
-    if(timeout_active) {
-        printf("- Timeout active\n");
-    } else {
-        printf("- Timeout disabled\n");
-    }
-    if(hvp_mode) {
-        printf("- HVP internal\n");
-    } else {
-        printf("- HVP external\n");
+    else
+    {
+        printf("Status:\n");
+
+        if(armed) {
+            printf("- [1] Armed\n");
+        } else {
+            printf("- [0] Disarmed\n");
+        }
+        if(charged) {
+            printf("- [1] Charged\n");
+        } else {
+            printf("- [0] Not charged\n");
+        }
+        if(timeout_active) {
+            printf("- [1] Timeout active\n");
+        } else {
+            printf("- [0] Timeout disabled\n");
+        }
+        if(hvp_mode) {
+            printf("- [0] HVP internal\n");
+        } else {
+            printf("- [1] HVP external\n");
+        }
     }
 }
 
@@ -257,7 +288,8 @@ bool handle_command(char *command) {
         return true;
     }
 
-    if(strcmp(command, "t") == 0 || strcmp(command, "toggle_gp1") == 0) {
+    if(strcmp(command, "gt") == 0) 
+    {
         multicore_fifo_push_blocking(cmd_toggle_gp1);
         
         uint32_t result = multicore_fifo_pop_blocking();
@@ -268,9 +300,37 @@ bool handle_command(char *command) {
         return true;
     }
 
+    if(strcmp(command, "gl") == 0)
+    {
+        multicore_fifo_push_blocking(cmd_tL);
+        
+        uint32_t result = multicore_fifo_pop_blocking();
+        if(result != return_ok) {
+        }
+
+        return true;
+    }
+
+    if(strcmp(command, "gh") == 0) 
+    {
+        multicore_fifo_push_blocking(cmd_tH);
+        
+        uint32_t result = multicore_fifo_pop_blocking();
+        if(result != return_ok) {
+        }
+
+        return true;
+    }
+
     if(strcmp(command, "r") == 0 || strcmp(command, "reset") == 0) {
         watchdog_enable(1, 1);
         while(1);
+    }
+
+    if(strcmp(command, "v") == 0 || strcmp(command, "verbose") == 0) 
+    {
+        verbose ^= 1;
+        return true;
     }
 
     return false;
@@ -285,6 +345,8 @@ void serial_console() {
     pulse_power.f = PULSE_POWER_DEFAULT;
     pulse_delay_cycles = PULSE_DELAY_CYCLES_DEFAULT;
     pulse_time_cycles = PULSE_TIME_CYCLES_DEFAULT;
+
+    verbose = 0;
     
     while(1) {
         read_line();
@@ -300,21 +362,48 @@ void serial_console() {
             printf("                                           |___|                                                   \n");
             printf("\n");
 
-            printf("- <empty to repeat last command>\n");
+            printf("- <empty to repeat last command>\n\n");
+
             printf("- [h]elp\n");
-            printf("- [a]rm                     (Enable HV)\n");
-            printf("- [d]isarm                  (Remove HV)\n");
-            printf("- [p]ulse                   (Manual one shot)\n");
-            printf("- [en]able_timeout          (Enable HV Timout)\n");
-            printf("- [di]sable_timeout         (Disable HV Timout)\n");
-            printf("- [f]ast_trigger            (Start pin trigger detection)\n");
-            printf("- [fa]st_trigger_configure: delay_cycles=%d, time_cycles=%d\n", pulse_delay_cycles, pulse_time_cycles);
-            printf("- [in]ternal_hvp\n");
-            printf("- [ex]ternal_hvp\n");
-            printf("- [c]onfigure: pulse_time=%d, pulse_power=%f\n", pulse_time, pulse_power.f);
-            printf("- [t]oggle_gp1              (Manual reset target board)\n");
-            printf("- [s]tatus                  (Read PicoEmp status)\n");
-            printf("- [r]eset                   (Reset board)\n");
+
+            if (!verbose)
+            {
+                printf("- [a]rm\n");
+                printf("- [d]isarm\n");
+                printf("- [p]ulse\n");
+                printf("- [en]able_timeout\n");
+                printf("- [di]sable_timeout\n");
+                printf("- [f]ast_trigger\n");
+                printf("- [fa]st_trigger_configure: [%d, %d]\n", pulse_delay_cycles, pulse_time_cycles);
+                printf("- [in]ternal_hvp\n");
+                printf("- [ex]ternal_hvp\n");
+                printf("- [c]onfigure: [%d, %f]\n", pulse_time, pulse_power.f);
+                printf("- [gl] GP1 Low\n");
+                printf("- [gh] GP1 High\n");
+                printf("- [gt] GP1 Toggle\n");
+                printf("- [s]tatus\n");
+                printf("- [r]eset\n");
+            }
+            else
+            {
+                printf("- [a]rm                         (Enable HV)\n");
+                printf("- [d]isarm                      (Remove HV)\n");
+                printf("- [p]ulse                       (Manual one shot)\n");
+                printf("- [en]able_timeout              (Enable HV Timout)\n");
+                printf("- [di]sable_timeout             (Disable HV Timout)\n\n");
+                printf("- [f]ast_trigger                (Start pin trigger detection [GP0])\n");
+                printf("- [fa]st_trigger_configure      (Fast trigger configuration)\n   |--> delay_cycles=%d\n   |--> time_cycles=%d\n\n", pulse_delay_cycles, pulse_time_cycles);
+                printf("- [in]ternal_hvp                (Use Internal HV PWM Charge logic)\n");
+                printf("- [ex]ternal_hvp                (Use External HV PWM Charge logic)\n");
+                printf("- [c]onfigure                   (HVP Charge configuration)\n   |--> pulse_time=%d\n   |--> pulse_power=%f\n\n", pulse_time, pulse_power.f);
+                printf("- [gl] GP1 Low                  (General purpose output LOW    [GP1])\n");
+                printf("- [gh] GP1 High                 (General purpose output HIGH   [GP1])\n\n");
+                printf("- [gt] GP1 Toggle               (General purpose output TOGGLE [GP1])\n");
+                printf("- [s]tatus                      (Read PicoEmp status)\n");
+                printf("- [r]eset                       (Reset board)\n");
+            }
+
+            printf("- [v]erbose\n");
         }
         printf("\n");
         

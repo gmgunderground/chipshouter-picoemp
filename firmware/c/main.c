@@ -100,9 +100,9 @@ int main() {
     }
 
     // Init for reset pin (move somewhere else)
-    gpio_init(1);
-    gpio_set_dir(1, GPIO_OUT);
-    gpio_put(1, 1);
+    gpio_init(PIN_GP1);
+    gpio_set_dir(PIN_GP1, GPIO_OUT);
+    gpio_put(PIN_GP1, true);
 
     //Now initialization is really complete, we can power on STATUS
     gpio_put(PIN_LED_STATUS, true);
@@ -187,6 +187,15 @@ int main() {
                     gpio_xor_mask(1<<1);
                     multicore_fifo_push_blocking(return_ok);
                     break;
+                case cmd_tL:
+                    gpio_put(PIN_GP1, false);
+                    multicore_fifo_push_blocking(return_ok);
+                    break;
+                case cmd_tH:
+                    gpio_put(PIN_GP1, true);
+                    multicore_fifo_push_blocking(return_ok);
+                    break;
+
             }
         }
 
@@ -203,7 +212,7 @@ int main() {
             } else {
                 disarm();
             }
-            // YOLO debouncing
+            // YOLO debouncing (rimbalzo)
             while(gpio_get(PIN_BTN_ARM));
             sleep_ms(100);
         }
