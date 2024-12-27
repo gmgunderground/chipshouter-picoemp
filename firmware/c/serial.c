@@ -397,8 +397,8 @@ void serial_console() {
                 printf("- [ex]ternal_hvp                (Use External HV PWM Charge logic)\n");
                 printf("- [c]onfigure                   (HVP Charge configuration)\n   |--> pulse_time=%d\n   |--> pulse_power=%f\n\n", pulse_time, pulse_power.f);
                 printf("- [gl] GP1 Low                  (General purpose output LOW    [GP1])\n");
-                printf("- [gh] GP1 High                 (General purpose output HIGH   [GP1])\n\n");
-                printf("- [gt] GP1 Toggle               (General purpose output TOGGLE [GP1])\n");
+                printf("- [gh] GP1 High                 (General purpose output HIGH   [GP1])\n");
+                printf("- [gt] GP1 Toggle               (General purpose output TOGGLE [GP1])\n\n");
                 printf("- [s]tatus                      (Read PicoEmp status)\n");
                 printf("- [r]eset                       (Reset board)\n");
             }
