@@ -393,8 +393,8 @@ void serial_console() {
                 printf("- [di]sable_timeout             (Disable HV Timout)\n\n");
                 printf("- [f]ast_trigger                (Start pin trigger detection [GP0])\n");
                 printf("- [fa]st_trigger_configure      (Fast trigger configuration)\n   |--> delay_cycles=%d\n   |--> time_cycles=%d\n\n", pulse_delay_cycles, pulse_time_cycles);
-                printf("- [in]ternal_hvp                (Use Internal HV PWM Charge logic)\n");
-                printf("- [ex]ternal_hvp                (Use External HV PWM Charge logic)\n");
+                printf("- [in]ternal_hvp                (Use Internal HVP)\n");
+                printf("- [ex]ternal_hvp                (Use External HVP)\n");
                 printf("- [c]onfigure                   (HVP Charge configuration)\n   |--> pulse_time=%d\n   |--> pulse_power=%f\n\n", pulse_time, pulse_power.f);
                 printf("- [gl] GP1 Low                  (General purpose output LOW    [GP1])\n");
                 printf("- [gh] GP1 High                 (General purpose output HIGH   [GP1])\n");
